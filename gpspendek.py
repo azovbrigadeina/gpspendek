@@ -1,12 +1,12 @@
-# Simpan sebagai app.py
+# app.py — versi FINAL yang bener-bener sesuai keinginanmu
 
 import streamlit as st
 
-st.title("Koordinat Converter")
-st.caption("Hasil: latitude 7 digit ▪ longitude 7 digit (persis seperti yang kamu mau)")
+st.title("Koordinat Converter (7 + 7 Digit)")
+st.caption("Hasil pasti 7 digit setelah titik desimal untuk latitude & longitude")
 
 coord = st.text_input(
-    "Paste koordinat panjang di sini",
+    "Masukkan koordinat panjang",
     placeholder="-1.4476399912727798, 103.5149938637734"
 )
 
@@ -16,30 +16,26 @@ if coord:
         lat = float(lat_str)
         lon = float(lon_str)
 
-        # DIPAKSA 7 + 7 seperti yang kamu inginkan
-        short_lat = f"{lat:.7f}"
-        short_lon = f"{lon:.7f}"   # ← longitude juga 7 digit
-
-        # Bersihkan nol di belakang biar lebih rapi (opsional)
-        short_lat = short_lat.rstrip("0").rstrip(".") if "." in short_lat else short_lat
-        short_lon = short_lon.rstrip("0").rstrip(".") if "." in short_lon else short_lon
+        # DIPAKSA 7 digit setelah titik, nol belakang TIDAK dihapus
+        short_lat = f"{lat:.7f}"    # contoh: -1.4476400
+        short_lon = f"{lon:.7f}"    # contoh: 103.5149939
 
         hasil = f"{short_lat}, {short_lon}"
 
-        st.success("Berhasil dikonversi!")
+        st.success("Sukses!")
         st.code(hasil, language=None)
-        st.write(f"**Latitude**  : {short_lat} (7 digit)  \n**Longitude** : {short_lon} (7 digit)")
+        st.write(f"**Latitude**  → {short_lat} ← pasti 7 digit  \n**Longitude** → {short_lon} ← pasti 7 digit")
 
         # Tombol copy
         st.markdown(f"""
-        <button onclick="navigator.clipboard.writeText('{hasil}'); alert('Tercopy!')" 
-        style="padding:12px 24px; font-size:18px; background:#4CAF50; color:white; border:none; border-radius:8px; cursor:pointer; margin-top:10px;">
+        <button onclick="navigator.clipboard.writeText('{hasil}'); alert('Sudah tercopy!')" 
+        style="padding:15px 30px; font-size:18px; background:#0066ff; color:white; border:none; border-radius:10px; cursor:pointer; margin-top:15px;">
         📋 Copy Koordinat
         </button>
         """, unsafe_allow_html=True)
 
-        # Link Google Maps (tetap pakai koordinat asli biar akurat)
-        st.markdown(f"[Buka di Google Maps](https://www.google.com/maps?q={lat},{lon})")
+        # Link Maps
+        st.markdown(f"[Buka di Google Maps](https://www.google.com/maps?q={short_lat},{short_lon})")
 
-    except Exception as e:
-        st.error("Format salah! Contoh benar: -6.175110, 106.8650395")
+    except:
+        st.error("Format salah! Contoh: -1.44763999, 103.51499386")
