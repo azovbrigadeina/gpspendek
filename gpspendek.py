@@ -1,62 +1,45 @@
+# Simpan sebagai app.py
+
 import streamlit as st
 
-st.title("🔄 Koordinat Converter: Panjang → Pendek")
-st.write("Ubah koordinat desimal panjang jadi pendek (7-8 digit) seperti yang biasa dipakai di Maps/WhatsApp")
+st.title("Koordinat Converter")
+st.write("Ubah koordinat panjang jadi format pendek **persis seperti contoh kamu** (-1.4477143, 103.5150653)")
 
-# Input dari user
 coord = st.text_input(
-    "Masukkan koordinat (pisahkan latitude & longitude dengan koma)",
+    "Paste koordinat panjang di sini",
     placeholder="-1.4476399912727798, 103.5149938637734"
 )
 
 if coord:
     try:
-        # Bersihkan spasi dan pisah
         lat_str, lon_str = [x.strip() for x in coord.replace(" ", "").split(",")]
         lat = float(lat_str)
         lon = float(lon_str)
 
-        # Opsi tingkat pemendekan
-        option = st.radio("Pilih tingkat pemendekan:", 
-                         ["Pendek banget (5-6 digit → ±10m)", 
-                          "Standar WhatsApp/Maps (7 digit → ±1-3m) ⭐ Rekomendasi",
-                          "Super akurat (8 digit → <1m)",
-                          "Sama persis seperti contohmu"])
+        # SESUAI POLA CONTOHMU: latitude 7 digit, longitude 8 digit
+        short_lat = f"{lat:.7f}"   # -1.4477143
+        short_lon = f"{lon:.8f}"   # 103.5150653
 
-        if option == "Pendek banget (5-6 digit → ±10m)":
-            short_lat = f"{lat:.6f}".rstrip("0").rstrip(".")
-            short_lon = f"{lon:.6f}".rstrip("0").rstrip(".")
-        elif option == "Super akurat (8 digit → <1m)":
-            short_lat = f"{lat:.8f}"
-            short_lon = f"{lon:.8f}"
-        elif option == "Sama persis seperti contohmu":
-            short_lat = f"{lat:.7f}"   # -1.4477143 → 7 digit setelah titik
-            short_lon = f"{lon:.8f}"   # 103.5150653 → 8 digit setelah titik
-        else:  # Rekomendasi 7 digit
-            short_lat = f"{lat:.7f}"
-            short_lon = f"{lon:.7f}"
+        # Hilangkan nol di belakang kalau ada (biar lebih rapi)
+        short_lat = short_lat.rstrip("0").rstrip(".") if "." in short_lat else short_lat
+        short_lon = short_lon.rstrip("0").rstrip(".") if "." in short_lon else short_lon
 
-        short_coord = f"{short_lat}, {short_lon}"
+        hasil = f"{short_lat}, {short_lon}"
 
-        st.markdown("### Hasil Koordinat Pendek:")
-        st.code(short_coord, language=None)
+        st.success("✅ Berhasil!")
+        st.code(hasil, language=None)
+        st.write(f"**Latitude**: {short_lat} ← 7 digit setelah titik  \n**Longitude**: {short_lon} ← 8 digit setelah titik")
 
         # Tombol copy otomatis
         st.markdown(f"""
-        <script>
-        function copyToClipboard() {{
-            navigator.clipboard.writeText("{short_coord}");
-            alert("Sudah dicopy ke clipboard!");
-        }}
-        </script>
-        <button onclick="copyToClipboard()" style="padding:10px; font-size:16px; background:#1E88E5; color:white; border:none; border-radius:5px; cursor:pointer;">
-        📋 Copy ke Clipboard
+        <button onclick="navigator.clipboard.writeText('{hasil}'); alert('Sudah dicopy!')" 
+        style="padding:12px 20px; font-size:18px; background:#00C853; color:white; border:none; border-radius:8px; cursor:pointer;">
+        📋 Copy Koordinat
         </button>
         """, unsafe_allow_html=True)
 
-        # Link langsung ke Google Maps
-        maps_url = f"https://www.google.com/maps?q={lat},{lon}"
-        st.markdown(f"[📍 Buka di Google Maps]({maps_url})")
+        # Langsung buka Google Maps
+        st.markdown(f"[Buka lokasi ini di Google Maps](https://www.google.com/maps?q={short_lat},{short_lon})")
 
     except:
-        st.error("Format salah! Contoh yang benar: -1.44763999, 103.51499386")
+        st.error("Format salah! Harus pakai koma, contoh: -1.44763999, 103.51499386")
